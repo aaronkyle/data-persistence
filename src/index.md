@@ -1,50 +1,36 @@
 # Data Persistence
 
-```js echo
-display(state_data)
-```
+```js
+// needed to correctly initialize the chart
+const template_data = ({
+    name: "Template Project",
+    description: "Template Project Data",
+    status: "-"
+})
 
-```js echo
-let state_data = Mutable ({})
-
-function swap_data(data) {
-  state_data.value = data;
-  display(state_data.value)
-}
+// test data
+const file_data = ({
+    name: "File Project",
+    description: "Changed project data",
+    status: "pending"
+})
 ```
 
 ```js
-const ephemeral_state = (function() {
-    const ephemeral_state = localStorage.getItem('state_data');
-    return ephemeral_state !== null && ephemeral_state !== 'null'
-        ? state_data.value = JSON.parse(ephemeral_state)
-        : state_data.value = template_data;
-})();
-```
+/// initialize with localStorage, or use a template data file to pre-populate required data fields
+let state_data = Mutable(JSON.parse(localStorage.getItem("state_data")) ?? template_data);
 
-
-
-
-```js echo
-const template_data = ({
-    name: "Sample Project",
-    description: "Initial project data",
-    status: "active"
-})
+function swap_data(data) {
+  state_data.value = data;
+}
 ```
 
 ```js
 const load_template_data = view(Inputs.button("Load Template", {reduce: () => swap_data(template_data)}))
 ```
 
-
-
-```js echo
-const file_data = ({
-    name: "File Project",
-    description: "Changed project data",
-    status: "pending"
-})
+```js
+display(download(serialize(file_data), download_name, "Download Test File"))
 ```
 
 ```js
@@ -75,15 +61,16 @@ let current_state = display(({
 
 ```js
 // we will not auto-persist changes
-const persist_current_state = view(Inputs.button("Persist Changed Data", {
-    reduce: () => {
-        localStorage.setItem('state_data', JSON.stringify(current_state))    }
-}))
+//const persist_current_state = view(Inputs.button("Persist Changed Data", {
+//    reduce: () => {
+//        localStorage.setItem('state_data', JSON.stringify(current_state))    }
+//}))
 ```
 
-```js echo
-//localStorage.setItem('state_data', JSON.stringify(current_state));
-//"Function applied";
+```js
+// auto-persist changes
+localStorage.setItem('state_data', JSON.stringify(current_state));
+"Data Persisted";
 ```
 
 
@@ -100,10 +87,10 @@ function serialize (data) {
 ```
 
 
-```js echo
-const download_name = "state_data"
+```js
+const download_name = name
 ```
 
 ```js
-display(download(serialize(current_state), download_name, "Download Current State"))
+display(download(serialize(current_state), download_name, "Download Updated Data"))
 ```
