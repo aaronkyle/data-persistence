@@ -23,18 +23,29 @@ let state_data = Mutable(JSON.parse(localStorage.getItem("state_data")) ?? templ
 function swap_data(data) {
   state_data.value = data;
 }
+
+(async function(d) {
+    return d === null ? "pending file selection" : state_data.value = await d.json();
+})(local_data);
 ```
 
 ```js
-const load_template_data = view(Inputs.button("Load Template", {reduce: () => swap_data(template_data)}))
+const load_template_data = view(Inputs.button("Reset Template", {reduce: () => swap_data(template_data)}))
 ```
 
 ```js
-display(download(serialize(file_data), download_name, "Download Test File"))
+const local_data = view(Inputs.file({
+//    label : "Load Project",
+    multiple : false,
+}))
 ```
 
 ```js
-const load_file_data = view(Inputs.button("Load File Data", {reduce: () => swap_data(file_data)}))
+// display( download(serialize(file_data), download_name, "Download Test File"))
+```
+
+```js
+// const load_file_data = view(Inputs.button("Load File Data", {reduce: () => swap_data(file_data)}))
 ```
 
 ```js
